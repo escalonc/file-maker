@@ -3,26 +3,37 @@
 
 FixedSizeRegister::FixedSizeRegister()
 {
-	this->dataFile = new DataFile((char*)"fixedSizeFile");
 	this->name = new char[30];
 	this->job = new char[20];
 }
 
+FixedSizeRegister::~FixedSizeRegister()
+{
+	delete[] this->name;
+	delete[] this->job;
+	delete this->dataFile;
+}
+
 void FixedSizeRegister::printRegister()
 {
+	cout << "Id: " << this->id << endl;
+	cout << "Name: " << this->name << endl;
+	cout << "Job: " << this->job << endl;
+	cout << "Salary: " << this->salary << endl;
 }
 
 char * FixedSizeRegister::toChar()
 {
-	char * data = new char[sizeof(int) + 30 + 20 + sizeof(salary)];
+	const int size = this->getSize();
+	char * data = new char[size];
 
-	memcpy(data, reinterpret_cast<char*>(&id), sizeof(int));
+	memcpy(data, reinterpret_cast<char*>(&this->id), sizeof(this->id));
 
-	memcpy(data + sizeof(id), name, 30);
+	memcpy(data + sizeof(this->id), this->name, 30);
 
-	memcpy(data + sizeof(id) + 30, reinterpret_cast<char*>(&salary), sizeof(salary));
+	memcpy(data + sizeof(this->id) + 30, reinterpret_cast<char*>(&this->salary), sizeof(this->salary));
 
-	memcpy(data + sizeof(id) + 30 + sizeof(salary), job, 20);
+	memcpy(data + sizeof(this->id) + 30 + sizeof(this->salary), this->job, 20);
 
 	return data;
 }
@@ -33,28 +44,33 @@ void FixedSizeRegister::fromChar(char * data)
 
 	memcpy(this->name, data + sizeof(this->id), 30);
 
-	memcpy(reinterpret_cast<char*>(&salary), data + sizeof(this->id) + 30, sizeof(this->salary));
+	memcpy(&this->salary, data + sizeof(this->id) + 30, sizeof(this->salary));
 
-	memcpy(job, data + sizeof(this->id) + 30 + sizeof(this->salary), 20);
+	memcpy(this->job, data + sizeof(this->id) + 30 + sizeof(this->salary), 20);
 }
 
 void FixedSizeRegister::openFile(char * name)
 {
+	this->dataFile = new DataFile(name);
 }
 
 void FixedSizeRegister::writeIntoFile()
 {
+	this->dataFile->write(this->toChar(), this->getSize());
 }
 
 void FixedSizeRegister::readIntoFile(int position)
 {
+	char * data = this->dataFile->read(position, this->getSize());
+	this->fromChar(data);
 }
 
 void FixedSizeRegister::closeFile()
 {
+	this->dataFile->close();
 }
 
 int FixedSizeRegister::getSize()
 {
-	return sizeof(this->id) + sizeof(this->name) + sizeof(this->job) + +sizeof(this->salary);
+	return sizeof(this->id) + 30 + 20 + sizeof(this->salary);
 }

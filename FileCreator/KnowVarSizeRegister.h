@@ -1,19 +1,21 @@
 #pragma once
-
 #include "DataFile.h"
 
-class FixedSizeRegister
+class KnowVarSizeRegister
 {
 private:
 	DataFile * dataFile;
 	int id;
+	int sizeName;
 	char * name;
 	double salary;
+	int sizeJob;
 	char * job;
 
 public:
-	FixedSizeRegister();
-	~FixedSizeRegister();
+	KnowVarSizeRegister();
+	~KnowVarSizeRegister();
+
 	void printRegister();
 	char* toChar();
 	void fromChar(char* data);
