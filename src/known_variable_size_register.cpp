@@ -29,15 +29,10 @@ char *KnowVariableSizeRegister::toChar()
 	char *data = new char[size];
 
 	memcpy(data, reinterpret_cast<char *>(&this->id), sizeof(this->id));
-
 	memcpy(data + sizeof(this->id), reinterpret_cast<char *>(&this->sizeName), sizeof(this->sizeName));
-
 	memcpy(data + sizeof(this->id) + sizeof(this->sizeName), this->name, this->sizeName);
-
 	memcpy(data + sizeof(this->id) + sizeof(this->sizeName) + this->sizeName, reinterpret_cast<char *>(&this->salary), sizeof(this->salary));
-
 	memcpy(data + sizeof(this->id) + sizeof(this->sizeName) + this->sizeName + sizeof(this->salary), reinterpret_cast<char *>(&this->sizeJob), sizeof(this->sizeJob));
-
 	memcpy(data + sizeof(this->id) + sizeof(this->sizeName) + this->sizeName + sizeof(this->salary) + sizeof(this->sizeJob), this->job, this->sizeJob);
 
 	return data;
@@ -67,11 +62,14 @@ void KnowVariableSizeRegister::openFile(char *name)
 
 void KnowVariableSizeRegister::writeIntoFile()
 {
+	this->dataFile->open(std::ios::in | std::ios::out | std::ios::binary | std::ios::app);
 	this->dataFile->write(this->toChar(), this->getSize());
+	this->dataFile->close();
 }
 
 void KnowVariableSizeRegister::readIntoFile(int position)
 {
+	this->dataFile->open();
 	int countSize = 0;
 
 	for (int i = 0; i <= position; i++)
@@ -85,6 +83,7 @@ void KnowVariableSizeRegister::readIntoFile(int position)
 
 		countSize += this->getSize();
 	}
+	this->dataFile->close();
 }
 
 void KnowVariableSizeRegister::closeFile()

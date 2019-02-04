@@ -29,27 +29,29 @@ char *FixedSizeRegister::toChar()
 {
 	const int size = this->getSize();
 	char *data = new char[size];
+	int position = 0;
 
-	memcpy(data, reinterpret_cast<char *>(&this->id), sizeof(this->id));
-	data += sizeof(this->id);
-	memcpy(data, this->name, 30);
-	data += 30;
-	memcpy(data, reinterpret_cast<char *>(&this->salary), sizeof(this->salary));
-	data += sizeof(this->salary);
-	memcpy(data, this->job, 20);
+	memcpy(&data[position], reinterpret_cast<char *>(&this->id), sizeof(this->id));
+	position += sizeof(this->id);
+	memcpy(&data[position], this->name, 30);
+	position += 30;
+	memcpy(&data[position], reinterpret_cast<char *>(&this->salary), sizeof(this->salary));
+	position += sizeof(this->salary);
+	memcpy(&data[position], this->job, 20);
 
 	return data;
 }
 
 void FixedSizeRegister::fromChar(char *data)
 {
-	memcpy(&this->id, data, sizeof(this->id));
-	data += sizeof(this->id);
-	memcpy(this->name, data, 30);
-	data += 30;
-	memcpy(&this->salary, data, sizeof(this->salary));
-	data += sizeof(this->salary);
-	memcpy(this->job, data, 20);
+	int postion = 0;
+	memcpy(&this->id, &data[postion], sizeof(this->id));
+	postion += sizeof(this->id);
+	memcpy(this->name, &data[postion], 30);
+	postion += 30;
+	memcpy(&this->salary, &data[postion], sizeof(this->salary));
+	postion += sizeof(this->salary);
+	memcpy(this->job, &data[postion], 20);
 }
 
 void FixedSizeRegister::openFile(char *name)
@@ -59,7 +61,7 @@ void FixedSizeRegister::openFile(char *name)
 
 void FixedSizeRegister::writeIntoFile()
 {
-	this->dataFile->open();
+	this->dataFile->open(std::ios::in | std::ios::out | std::ios::binary | std::ios::app);
 	this->dataFile->write(this->toChar(), this->getSize());
 	this->dataFile->close();
 }

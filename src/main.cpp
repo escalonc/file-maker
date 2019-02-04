@@ -3,26 +3,23 @@
 #include "data_file.h"
 #include "fixed_size_register.h"
 #include "known_variable_size_register.h"
+#include "delimiter_register.h"
 
 using namespace std;
-
-struct Item
-{
-	int id;
-	char name[30];
-};
+#include <iostream>
 
 char *serializeFixedSize(int id, char name[30], double salary, char job[20])
 {
 	char *data = new char[sizeof(int) + 30 + 20 + sizeof(salary)];
+	int position = 0;
 
-	memcpy(data, reinterpret_cast<char *>(&id), sizeof(int));
-	data += sizeof(int);
+	memcpy(&data[position], reinterpret_cast<char *>(&id), sizeof(int));
+	position += sizeof(int);
 	memcpy(data, name, 30);
-	data += 30;
-	memcpy(data, reinterpret_cast<char *>(&salary), sizeof(salary));
-	data += sizeof(salary);
-	memcpy(data, job, 20);
+	position += 30;
+	memcpy(&data[position], reinterpret_cast<char *>(&salary), sizeof(salary));
+	position += sizeof(salary);
+	memcpy(&data[position], job, 20);
 
 	return data;
 }
@@ -30,18 +27,19 @@ char *serializeFixedSize(int id, char name[30], double salary, char job[20])
 char *serializeKnownVarSize(int id, char *name, double salary, char *job, int sizeName, int sizeJob)
 {
 	char *data = new char[sizeof(id) + sizeof(sizeName) + sizeName + sizeof(salary) + sizeof(sizeJob) + sizeJob];
+	int position = 0;
 
-	memcpy(data, reinterpret_cast<char *>(&id), sizeof(id));
-	data += +sizeof(id);
-	memcpy(data, reinterpret_cast<char *>(&sizeName), sizeof(sizeName));
-	data += sizeof(sizeName);
-	memcpy(data, name, sizeName);
-	data += sizeName;
-	memcpy(data, reinterpret_cast<char *>(&salary), sizeof(salary));
-	data += sizeof(salary);
-	memcpy(data, reinterpret_cast<char *>(&sizeJob), sizeof(sizeJob));
-	data += sizeof(sizeJob);
-	memcpy(data, job, sizeJob);
+	memcpy(&data[position], reinterpret_cast<char *>(&id), sizeof(id));
+	position += +sizeof(id);
+	memcpy(&data[position], reinterpret_cast<char *>(&sizeName), sizeof(sizeName));
+	position += sizeof(sizeName);
+	memcpy(&data[position], name, sizeName);
+	position += sizeName;
+	memcpy(&data[position], reinterpret_cast<char *>(&salary), sizeof(salary));
+	position += sizeof(salary);
+	memcpy(&data[position], reinterpret_cast<char *>(&sizeJob), sizeof(sizeJob));
+	position += sizeof(sizeJob);
+	memcpy(&data[position], job, sizeJob);
 
 	return data;
 }
@@ -68,6 +66,7 @@ int main()
 
 		FixedSizeRegister *fixedRegister = new FixedSizeRegister();
 		KnowVariableSizeRegister *knownSizeRegister = new KnowVariableSizeRegister();
+		DelimiterRegister *delimiter = new DelimiterRegister();
 
 		switch (option)
 		{
@@ -188,8 +187,15 @@ int main()
 
 		break;
 		case 6:
+		{
+			int delimiterPosition;
+			cout << "Ingrese la posición: " << endl;
+			cin >> delimiterPosition;
 
-			break;
+			delimiter->readFromFile(delimiterPosition);
+			delimiter->printRegister();
+		}
+		break;
 		}
 
 		cout << "¿Desea continuar, ingrese 's' para continuar? " << endl;

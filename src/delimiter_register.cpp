@@ -2,6 +2,7 @@
 #include "delimiter_register.h"
 
 #include <string>
+#include <iostream>
 
 using namespace std;
 
@@ -17,6 +18,7 @@ DelimiterRegister::~DelimiterRegister()
 
 void DelimiterRegister::writeIntoFile()
 {
+  this->dataFile->open(std::ios::app | std::ios::in | std::ios::out | std::ios::binary);
 
   if (this->dataFile->isEmpty())
   {
@@ -24,6 +26,7 @@ void DelimiterRegister::writeIntoFile()
   }
 
   this->dataFile->write(this->toChar(), this->getSize());
+  this->dataFile->close();
 }
 char *DelimiterRegister::toChar()
 {
@@ -77,6 +80,36 @@ void DelimiterRegister::fromChar(char *data)
   token = strtok(nullptr, &recordDelimiter);
   length = strlen(token);
   memcpy(this->job, &data[position], length);
+}
+
+void DelimiterRegister::printRegister()
+{
+  std::cout << "Id: " << this->id << endl;
+  std::cout << "Name: " << this->name << endl;
+  std::cout << "Job: " << this->job << endl;
+  std::cout << "Salary: " << this->salary << endl;
+}
+
+void DelimiterRegister::readFromFile(int position)
+{
+  char *data;
+
+  char *byte = this->dataFile->read(0, 1);
+
+  char fieldDelimiter = '|';
+
+  while (byte != &fieldDelimiter)
+  {
+    memcpy(&data[position], byte, 1);
+    byte = this->dataFile->read(0, 1);
+  }
+
+  if (byte == &fieldDelimiter)
+  {
+    memcpy(&data[position], byte, 1);
+  }
+
+  fromChar(data);
 }
 
 int DelimiterRegister::getSize()
