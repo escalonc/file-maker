@@ -2,6 +2,8 @@
 #include <iostream>
 #include "fixed_size_register.h"
 
+using namespace std;
+
 FixedSizeRegister::FixedSizeRegister()
 {
 	this->name = new char[30];
@@ -29,9 +31,12 @@ char *FixedSizeRegister::toChar()
 	char *data = new char[size];
 
 	memcpy(data, reinterpret_cast<char *>(&this->id), sizeof(this->id));
-	memcpy(data + sizeof(this->id), this->name, 30);
-	memcpy(data + sizeof(this->id) + 30, reinterpret_cast<char *>(&this->salary), sizeof(this->salary));
-	memcpy(data + sizeof(this->id) + 30 + sizeof(this->salary), this->job, 20);
+	data += sizeof(this->id);
+	memcpy(data, this->name, 30);
+	data += 30;
+	memcpy(data, reinterpret_cast<char *>(&this->salary), sizeof(this->salary));
+	data += sizeof(this->salary);
+	memcpy(data, this->job, 20);
 
 	return data;
 }
@@ -39,9 +44,12 @@ char *FixedSizeRegister::toChar()
 void FixedSizeRegister::fromChar(char *data)
 {
 	memcpy(&this->id, data, sizeof(this->id));
-	memcpy(this->name, data + sizeof(this->id), 30);
-	memcpy(&this->salary, data + sizeof(this->id) + 30, sizeof(this->salary));
-	memcpy(this->job, data + sizeof(this->id) + 30 + sizeof(this->salary), 20);
+	data += sizeof(this->id);
+	memcpy(this->name, data, 30);
+	data += 30;
+	memcpy(&this->salary, data, sizeof(this->salary));
+	data += sizeof(this->salary);
+	memcpy(this->job, data, 20);
 }
 
 void FixedSizeRegister::openFile(char *name)
@@ -51,13 +59,18 @@ void FixedSizeRegister::openFile(char *name)
 
 void FixedSizeRegister::writeIntoFile()
 {
+	this->dataFile->open();
 	this->dataFile->write(this->toChar(), this->getSize());
+	this->dataFile->close();
 }
 
 void FixedSizeRegister::readIntoFile(int position)
 {
+	this->dataFile->open();
 	char *data = this->dataFile->read(position, this->getSize());
 	this->fromChar(data);
+	this->dataFile->close();
+	delete data;
 }
 
 void FixedSizeRegister::closeFile()

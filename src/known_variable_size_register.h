@@ -1,20 +1,23 @@
-#ifndef FIXED_SIZE_REGISTER_H
-#define FIXED_SIZE_REGISTER_H
+#ifndef KNOWN_VARIABLE_SIZE_REGISTER_H
+#define KNOWN_VARIABLE_SIZE_REGISTER_H
 
 #include "data_file.h"
 
-class FixedSizeRegister
+class KnowVariableSizeRegister
 {
 private:
 	DataFile *dataFile;
 	int id;
+	int sizeName;
 	char *name;
 	double salary;
+	int sizeJob;
 	char *job;
 
 public:
-	FixedSizeRegister();
-	~FixedSizeRegister();
+	KnowVariableSizeRegister();
+	~KnowVariableSizeRegister();
+
 	void printRegister();
 	char *toChar();
 	void fromChar(char *data);
