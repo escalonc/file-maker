@@ -2,7 +2,7 @@
 #include <iostream>
 #include "data_file.h"
 #include "fixed_size_register.h"
-#include "know_variable_size_register.h"
+#include "known_variable_size_register.h"
 
 using namespace std;
 
@@ -160,8 +160,33 @@ int main()
 
 		break;
 		case 5:
+		{
+			char name[30], job[20];
+			int id;
+			double salary;
 
-			break;
+			fixedRegister->openFile((char *)"delimiter_file.dat");
+
+			cout << "Ingrese el id: " << endl;
+			cin >> id;
+
+			cout << "Ingrese el nombre: " << endl;
+			cin >> name;
+
+			cout << "Ingrese el trabajo: " << endl;
+			cin >> job;
+
+			cout << "Ingrese el salario: " << endl;
+			cin >> salary;
+
+			char *data = serializeFixedSize(id, name, salary, job);
+
+			fixedRegister->fromChar(data);
+			fixedRegister->writeIntoFile();
+			fixedRegister->closeFile();
+		}
+
+		break;
 		case 6:
 
 			break;

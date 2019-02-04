@@ -52,6 +52,31 @@ char *DelimiterRegister::toChar()
 
 void DelimiterRegister::fromChar(char *data)
 {
+  char recordDelimiter = '|';
+  char fieldDelimiter = ';';
+
+  int position = 0;
+
+  char *token = strtok(data, &fieldDelimiter);
+  int length = strlen(token);
+
+  memcpy(&this->id, &data[position], sizeof(int));
+  position += sizeof(int) + 1;
+
+  token = strtok(nullptr, &fieldDelimiter);
+  length = strlen(token);
+
+  memcpy(this->name, &data[position], length);
+  position += length + 1;
+
+  token = strtok(nullptr, &fieldDelimiter);
+
+  memcpy(&this->salary, &data[position], sizeof(double));
+  position += sizeof(double) + 1;
+
+  token = strtok(nullptr, &recordDelimiter);
+  length = strlen(token);
+  memcpy(this->job, &data[position], length);
 }
 
 int DelimiterRegister::getSize()
